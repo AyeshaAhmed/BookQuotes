@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
@@ -15,7 +16,7 @@ exports.handler = async function (event) {
     const requestBody = JSON.parse(event.body);
     switch (true) {
         case event.httpMethod === 'GET':
-            response = getQuote(event.queryStringParameters.postId);
+            response = await getQuote(event.queryStringParameters.postId);
             break;
         case event.httpMethod === 'POST':
             response = await saveQuote(requestBody);
@@ -48,8 +49,12 @@ async function getQuote(postId) {
 }
 
 async function saveQuote(requestBody) {
+    const postId = crypto.randomUUID();
+    requestBody.postId = postId;
+    const today = new Date().toISOString().split('T', 1)[0];
+    requestBody.createdDate = today;
     const params = {
-        TableName: dynamodbTableName,
+        TableName: dbQuoteTable,
         Item: requestBody
     }
     console.log('Request Params: ', params);
@@ -66,8 +71,12 @@ async function saveQuote(requestBody) {
 }
 
 async function modifyQuote(postId, userId, quoteText) {
+    const validUserId = await matchUserId(postId, userId);
+    if(!validUserId){
+        return buildResponse(400, '400 Bad Request');
+    }
     const params = {
-        TableName: dynamodbTableName,
+        TableName: dbQuoteTable,
         Key: {
             'postId': postId
         },
@@ -75,7 +84,7 @@ async function modifyQuote(postId, userId, quoteText) {
         ExpressionAttributeValues: {
             ':value': quoteText
         },
-        returnValues: 'UPDATE_NEW'
+        ReturnValues: 'ALL_NEW'
     }
     console.log('Request Params: ', params);
     return await dynamodb.update(params).promise().then((response) => {
@@ -91,8 +100,12 @@ async function modifyQuote(postId, userId, quoteText) {
 }
 
 async function deleteQuote(postId, userId) {
+    const validUserId = await matchUserId(postId, userId);
+    if(!validUserId){
+        return buildResponse(400, '400 Bad Request');
+    }
     const params = {
-        TableName: dynamodbTableName,
+        TableName: dbQuoteTable,
         Key: {
             'postId': postId
         },
@@ -109,6 +122,25 @@ async function deleteQuote(postId, userId) {
     }, (error) => {
         console.error('log error: ', error);
     })
+}
+
+async function matchUserId(postId, userId){
+    const params = {
+        TableName: dbQuoteTable,
+        Key: {
+            'postId': postId
+        }
+    }
+    console.log('Request Params: ', params);
+    try{
+        const response = await dynamodb.get(params).promise();
+        if(response.Item.userId === userId){
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('log error: ', error);
+    }   
 }
 
 function buildResponse(statusCode, body) {

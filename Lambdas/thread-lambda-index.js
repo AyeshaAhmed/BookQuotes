@@ -16,7 +16,7 @@ exports.handler = async function (event) {
     const requestBody = JSON.parse(event.body);
     switch (true) {
         case event.httpMethod === 'GET':
-            response = await getThread(event.queryStringParameters.postId);
+            response = await getPostThread(event.queryStringParameters.postId);
             break;
         case event.httpMethod === 'POST':
             response = await saveThread(requestBody);
@@ -33,21 +33,19 @@ exports.handler = async function (event) {
     return response;
 }
 
-async function getThread(postId) {
+async function getPostThread(postIdStr) {
     const params = {
         TableName: dbThreadTable,
-        IndexName: 'PostThreadIndex',
-        KeyConditionExpression: 'Quote = :postId',
+        IndexName: 'postId-index',
+        KeyConditionExpression: "postId = :postId",
         ExpressionAttributeValues: {
-            ':postId': {'S': postId}
-        },
-        ProjectionExpression: 'userId, text, date, threadId, postId',
-        ScanIndexForward: false
+            ":postId": postIdStr
+        }
     }
     console.log('Request Params: ', params);
-    return await dynamodb.get(params).promise().then((response) => {
+    return await dynamodb.query(params).promise().then((response) => {
         const body = {
-            thread: response
+            thread: response.Items
         }
         return buildResponse(200, body);
     }, (error) => {
@@ -58,6 +56,8 @@ async function getThread(postId) {
 async function saveThread(requestBody) {
     const threadId = crypto.randomUUID();
     requestBody.threadId = threadId;
+    const today = new Date().toISOString().split('T', 1)[0];
+    requestBody.createdDate = today;
     const params = {
         TableName: dbThreadTable,
         Item: requestBody
@@ -76,6 +76,9 @@ async function saveThread(requestBody) {
 }
 
 async function modifyThread(threadId, userId, text) {
+    if(!matchUserId(threadId, userId)){
+        return buildResponse(400, '400 Bad Request');
+    }
     const params = {
         TableName: dbThreadTable,
         Key: {
@@ -85,7 +88,7 @@ async function modifyThread(threadId, userId, text) {
         ExpressionAttributeValues: {
             ':value': text
         },
-        returnValues: 'UPDATE_NEW'
+        ReturnValues: 'ALL_NEW'
     }
     console.log('Request Params: ', params);
     return await dynamodb.update(params).promise().then((response) => {
@@ -101,6 +104,9 @@ async function modifyThread(threadId, userId, text) {
 }
 
 async function deleteThread(threadId, userId) {
+    if(!matchUserId(threadId, userId)){
+        return buildResponse(400, '400 Bad Request');
+    }
     const params = {
         TableName: dbThreadTable,
         Key: {
@@ -119,6 +125,25 @@ async function deleteThread(threadId, userId) {
     }, (error) => {
         console.error('log error: ', error);
     })
+}
+
+async function matchUserId(threadId, userId){
+    const params = {
+        TableName: dbThreadTable,
+        Key: {
+            'threadId': threadId
+        }
+    }
+    console.log('Request Params: ', params);
+    try{
+        const response = await dynamodb.get(params).promise();
+        if(response.Item.userId === userId){
+            return true;
+        }
+        return false;
+    } catch (error){
+        console.log('log error: ', error);
+    }
 }
 
 function buildResponse(statusCode, body) {

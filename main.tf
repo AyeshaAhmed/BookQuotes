@@ -21,14 +21,17 @@ terraform {
 }
 
 provider "aws" {
+#   /home/tfc-agent/.tfc-agent/component/terraform/runs/run-U9DQD7AJWhGNMt9S.plan/terraform.tfvars
+  access_key = "${var.aws_access_key_id}"
+  secret_key = "${var.aws_secret_access_key}"
   region = "us-west-2"
 }
 
 resource "random_pet" "sg" {}
 
-variable "AWS_ACCESS_KEY_ID" {}
+variable "access_key" {}
 
-variable "AWS_SECRET_ACCESS_KEY" {}
+variable "secret_key" {}
 
 data "aws_ami" "ubuntu" {
   most_recent = true

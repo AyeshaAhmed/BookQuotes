@@ -26,6 +26,10 @@ provider "aws" {
 
 resource "random_pet" "sg" {}
 
+variable "AWS_ACCESS_KEY_ID" {}
+
+variable "AWS_SECRET_ACCESS_KEY" {}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 

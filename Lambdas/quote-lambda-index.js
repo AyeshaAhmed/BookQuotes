@@ -5,11 +5,12 @@ AWS.config.update({
 });
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const dbQuoteTable = 'quote-table';
+const dbThreadTable = 'thread-table';
 const quotePath = '/quote';
 
 exports.handler = async function (event) {
     console.log('Request event: ', event);
-    if(event.path != quotePath){
+    if (event.path != quotePath) {
         return buildResponse(404, '404 Not Found');
     }
     let response;
@@ -72,7 +73,7 @@ async function saveQuote(requestBody) {
 
 async function modifyQuote(postId, userId, quoteText) {
     const validUserId = await matchUserId(postId, userId);
-    if(!validUserId){
+    if (!validUserId) {
         return buildResponse(400, '400 Bad Request');
     }
     const params = {
@@ -101,30 +102,62 @@ async function modifyQuote(postId, userId, quoteText) {
 
 async function deleteQuote(postId, userId) {
     const validUserId = await matchUserId(postId, userId);
-    if(!validUserId){
+    if (!validUserId) {
         return buildResponse(400, '400 Bad Request');
     }
-    const params = {
+    const getThreadParams = {
+        TableName: dbThreadTable,
+        IndexName: 'postId-index',
+        KeyConditionExpression: "postId = :postId",
+        ExpressionAttributeValues: {
+            ":postId": postId
+        }
+    }
+    console.log('Get Thread Request Params: ', getThreadParams);
+    const quoteDeleteParams = {
         TableName: dbQuoteTable,
         Key: {
             'postId': postId
         },
         ReturnValues: 'ALL_OLD'
     }
-    console.log('Request Params: ', params);
-    return await dynamodb.delete(params).promise().then((response) => {
-        const body = {
-            Operation: 'DELETE',
-            Message: 'SUCCESS',
-            Item: response
+    console.log('Delete Quote Request Params: ', quoteDeleteParams);
+    try {
+        const getThreadResponse = await dynamodb.query(getThreadParams).promise();
+        const threadList = getThreadResponse.Items;
+        const deletedThreadIds = [];
+        for (const thread of threadList) {
+            const threadDeleteParams = {
+                TableName: dbThreadTable,
+                Key: {
+                    'threadId': thread.threadId
+                },
+                ReturnValues: 'ALL_OLD'
+            }
+            console.log('Delete Thread Request Params: ', threadDeleteParams);
+            const threadDeleteResponse = await dynamodb.delete(threadDeleteParams).promise();
+            console.log('Deleted Thread: ', threadDeleteResponse);
+            deletedThreadIds.push(threadDeleteResponse.Attributes.threadId);
         }
-        return buildResponse(200, body);
-    }, (error) => {
+        if (threadList.length === deletedThreadIds.length) {
+            const quoteDeleteResponse = await dynamodb.delete(quoteDeleteParams).promise();
+            const body = {
+                Operation: 'DELETE',
+                Message: 'SUCCESS',
+                Item: quoteDeleteResponse,
+                ThreadCount: deletedThreadIds.length
+            }
+            return buildResponse(200, body);
+        } else {
+            console.log('Thread Deletetion Failed, threadListSize: %d, deletedThreadsSize: %d', threadList.length, deletedThreadIds.length);
+            return buildResponse(500, 'Thread Deletion Failed');
+        }
+    } catch (error) {
         console.error('log error: ', error);
-    })
+    }
 }
 
-async function matchUserId(postId, userId){
+async function matchUserId(postId, userId) {
     const params = {
         TableName: dbQuoteTable,
         Key: {
@@ -132,15 +165,15 @@ async function matchUserId(postId, userId){
         }
     }
     console.log('Request Params: ', params);
-    try{
+    try {
         const response = await dynamodb.get(params).promise();
-        if(response.Item.userId === userId){
+        if (response.Item.userId === userId) {
             return true;
         }
         return false;
     } catch (error) {
         console.error('log error: ', error);
-    }   
+    }
 }
 
 function buildResponse(statusCode, body) {

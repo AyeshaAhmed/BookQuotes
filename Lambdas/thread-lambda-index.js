@@ -84,9 +84,9 @@ async function modifyThread(threadId, userId, text) {
         Key: {
             'threadId': threadId
         },
-        UpdateExpression: 'set text = :value',
+        UpdateExpression: 'set threadText = :text',
         ExpressionAttributeValues: {
-            ':value': text
+            ':text': text
         },
         ReturnValues: 'ALL_NEW'
     }

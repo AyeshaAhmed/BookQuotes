@@ -27,8 +27,7 @@ exports.handler = async function (event) {
 
 async function getRecentQuotes() {
     const recentQuotes = [];
-    const i = 0;
-    do {
+    for(let i = 0; i < 3; i++){
         const queryDate = new Date(new Date().setDate(new Date().getDate() - i)).toISOString().split('T', 1)[0];
         const params = {
             TableName: dbQuotesTable,
@@ -40,14 +39,17 @@ async function getRecentQuotes() {
         }
         console.log('Request Params: ', params);
         try{
-            recentQuotes = await dynamodb.query(params).promise();
-            recentQuotes.sort((a, b) => (a.numBookmarks > b.numBookmarks) ? 1 : -1);
+            const response = await dynamodb.query(params).promise();
+            const quotes = response.Items;
+            if (quotes.length > 0) {
+                quotes.sort((a, b) => (a.numBookmarks > b.numBookmarks) ? 1 : -1);
+                recentQuotes.push(quotes);
+            }
         }catch (error) {
             console.error('log error: ', error);
             break;
         }
-        i++;
-    } while(recentQuotes.length < 10 || i < 2)
+    }
     const body = {quotes: recentQuotes};
     return buildResponse(200, body);
 }

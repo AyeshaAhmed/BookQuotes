@@ -11,21 +11,10 @@ terraform {
   }
   required_version = ">= 1.1.0"
 
-  # cloud {
-  #   organization = "ayesha-accenture"
-
-  #   workspaces {
-  #     name = "BookQuotes"
-  #   }
-  # }
-  
   backend "remote" {
-    # The name of your Terraform Cloud organization.
-    organization = "ayesha-accenture"
-
-    # The name of the Terraform Cloud workspace to store Terraform state files in.
+    organization = "example-organization"
     workspaces {
-      name = "BookQuotes"
+      name = "example-workspace"
     }
   }
 }

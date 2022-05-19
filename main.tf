@@ -11,13 +11,14 @@ terraform {
   }
   required_version = ">= 1.1.0"
 
-  cloud {
-    organization = "ayesha-accenture"
+  # cloud {
+  #   organization = "ayesha-accenture"
 
-    workspaces {
-      name = "BookQuotes"
-    }
-  }
+  #   workspaces {
+  #     name = "BookQuotes"
+  #   }
+  # }
+  
   backend "remote" {
     # The name of your Terraform Cloud organization.
     organization = "ayesha-accenture"

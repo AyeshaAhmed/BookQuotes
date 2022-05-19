@@ -52,8 +52,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write-all
-  issues: write-all
+  pull-requests: write
+  issues: write
 
 jobs:
   terraform:

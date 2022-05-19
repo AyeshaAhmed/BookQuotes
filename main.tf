@@ -11,9 +11,8 @@ terraform {
   }
   required_version = ">= 1.1.0"
 
-  cloud {
+  backend "remote" {
     organization = "ayesha-accenture"
-
     workspaces {
       name = "BookQuotes"
     }

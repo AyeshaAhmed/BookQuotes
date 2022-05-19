@@ -12,9 +12,9 @@ terraform {
   required_version = ">= 1.1.0"
 
   backend "remote" {
-    organization = "example-organization"
+    organization = "ayesha-accenture"
     workspaces {
-      name = "example-workspace"
+      name = "BookQuotes"
     }
   }
 }

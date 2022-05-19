@@ -21,16 +21,10 @@ terraform {
 }
 
 provider "aws" {
-  access_key = "${var.aws_access_key_id}"
-  secret_key = "${var.aws_secret_access_key}"
   region = "us-west-2"
 }
 
 resource "random_pet" "sg" {}
-
-variable "aws_access_key_id" {}
-
-variable "aws_secret_access_key" {}
 
 data "aws_ami" "ubuntu" {
   most_recent = true

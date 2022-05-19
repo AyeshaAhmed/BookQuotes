@@ -18,6 +18,15 @@ terraform {
       name = "BookQuotes"
     }
   }
+  backend "remote" {
+    # The name of your Terraform Cloud organization.
+    organization = "ayesha-accenture"
+
+    # The name of the Terraform Cloud workspace to store Terraform state files in.
+    workspaces {
+      name = "BookQuotes"
+    }
+  }
 }
 
 provider "aws" {

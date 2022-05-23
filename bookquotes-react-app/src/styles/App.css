@@ -1,0 +1,22 @@
+.App {
+  text-align: center;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+/* @media (prefers-reduced-motion: no-preference) {
+  .bq-logo {
+    animation: bq-logo-spin infinite 20s linear;
+  }
+} */
+
+/* @keyframes bq-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+} */

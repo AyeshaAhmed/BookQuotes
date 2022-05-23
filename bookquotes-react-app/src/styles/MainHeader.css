@@ -1,0 +1,23 @@
+.bq-main-logo {
+  padding-top: 15px;
+  padding-left: 15px;
+  height: 30%;
+  width: 20%;
+}
+
+.main-header {
+  background-color: antiquewhite;
+  min-height: 15vh;
+  display: flex;
+  align-items: left;
+  text-align: left;
+  justify-content: left;
+  font-size: calc(10px + 2vmin);
+  color: antiquewhite;
+}
+
+.quote-search-area {
+  padding: 25px;
+  width: 50%;
+  background-color: antiquewhite;
+}

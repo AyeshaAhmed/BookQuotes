@@ -1,6 +1,7 @@
 import React from "react";
 import { CSSGrid, measureItems, makeResponsive } from 'react-stonecutter';
 import data from '../assets/DummyList.json';
+import { Card, CardContent, Typography, CardActionArea } from "@mui/material";
 
 const Grid = makeResponsive(measureItems(CSSGrid), {
     maxWidth: 1920,
@@ -21,9 +22,16 @@ const QuoteGrid = () => {
             >
                 {data.map((datum) => (
                     <li className="grid-item" key={datum.id}>
-                        <button className="item-btn" key={datum.id}>
-                            {datum.text}
-                        </button>
+                        <Card variant="outlined" key={datum.id}>
+                            <CardActionArea>
+                                <CardContent>
+                                    <Typography paragraph>
+                                        {datum.text}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+
+                        </Card>
                     </li>
 
                 ))}

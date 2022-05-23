@@ -8,30 +8,21 @@
 
   .grid-item{
     position: relative;
+    /* display: flex; */
+    max-width: 290px;
   }
 
   .quote-grid{
     list-style-type: none;
-  }
-
-  .item-btn{
-    display: block;
-    width: 15em;
-    line-height: 1.5em;
-    padding: 0.2em;
-    margin:0.3em;	
-    border: 1px solid  #ccc ;  
-    border-radius: 8px;
-    -webkit-appearance:normal;
-    font-size: 1em;
-    word-wrap: break-word;
-    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .grid-area{
     margin: 0px;
     display: flex;
     justify-content: center;
-    background-color: antiquewhite;
     align-items: center;
+    background-color: antiquewhite;
   }

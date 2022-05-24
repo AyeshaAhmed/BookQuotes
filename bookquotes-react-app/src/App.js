@@ -4,11 +4,21 @@ import MainHeader from './components/MainHeader';
 import MainBody from './components/MainBody';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchQuotes: [],
+    }
+  }
+  handleCallback = (headerSearchResult) => {
+    this.setState({ searchQuotes: headerSearchResult });
+  }
   render() {
+    console.log(this.state.searchQuotes);
     return (
       <div className="App">
-        <MainHeader />
-        <MainBody />
+        <MainHeader parentCallback={this.handleCallback} />
+        <MainBody searchResults={this.state.searchQuotes} />
       </div>
     );
   }

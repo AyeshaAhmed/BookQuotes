@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/runtime": "^7.18.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.8.0",
+    "@mui/lab": "^5.0.0-alpha.83",
     "@mui/material": "^5.8.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -14,13 +17,16 @@
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
     "react-stonecutter": "^0.3.10",
+    "superagent": "^7.1.3",
+    "typesense": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy-react-s3": "npm run build && aws s3 sync build s3://book-quotes-sls --acl public-read"
   },
   "eslintConfig": {
     "extends": [

@@ -1,31 +1,61 @@
 [{
-    "id": 1,
-    "text": "Who controls the British crown?"
+    "postId": 1,
+    "quoteText": "Who controls the British crown?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 2,
-    "text": "Who keeps the metric system down?"
+    "postId": 2,
+    "quoteText": "Who keeps the metric system down?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 3,
-    "text": "Who keeps Atlantis off the maps?"
+    "postId": 3,
+    "quoteText": "Who keeps Atlantis off the maps?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 4,
-    "text": "Who keeps the Martians under wraps?"
+    "postId": 4,
+    "quoteText": "Who keeps the Martians under wraps?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 5,
-    "text": "Who holds back the electric car?"
+    "postId": 5,
+    "quoteText": "Who holds back the electric car?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 6,
-    "text": "Who makes Steve Guttenberg a star?"
+    "postId": 6,
+    "quoteText": "Who makes Steve Guttenberg a star?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 7,
-    "text": "Who robs cavefish of their sight?"
+    "postId": 7,
+    "quoteText": "Who robs cavefish of their sight?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 8,
-    "text": "Who rigs every Oscar night?"
+    "postId": 8,
+    "quoteText": "Who rigs every Oscar night?",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 9,
-    "text": "We do!"
+    "postId": 9,
+    "quoteText": "We do!",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }, {
-    "id": 10,
-    "text": "We do!"
+    "postId": 10,
+    "quoteText": "We do!",
+    "tags":"#funny",
+    "bookName":"something",
+    "authorName":"someone"
 }] 

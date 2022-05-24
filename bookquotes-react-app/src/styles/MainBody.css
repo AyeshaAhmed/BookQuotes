@@ -8,7 +8,9 @@
 
   .grid-item{
     position: relative;
-    /* display: flex; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     max-width: 290px;
   }
 

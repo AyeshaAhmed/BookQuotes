@@ -33,7 +33,6 @@ const QuoteGrid = () => {
 
                         </Card>
                     </li>
-
                 ))}
             </Grid>
         </div>

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@babel/runtime": "^7.18.0",
+    "typesense": "^1.2.2"
+  }
+}

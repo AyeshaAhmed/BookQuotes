@@ -25,11 +25,9 @@ const NavBar = (props) => {
         }
       },[isSearched]);
 
-    let gridItems = data.map((datum) => (
-        <li className="grid-item" key={datum.postId}>
-            <GridQuoteTile quoteData={datum} isSingle={false}/>
-        </li>
-    ));
+    let gridItems = data.map((item) => (
+        <GridQuoteTile quoteData={item} key={item.postId}/>
+      ));
 
     return (
         <Box sx={{ width: '100%', typography: 'body1' }} className="nav-bar-area">
@@ -45,6 +43,7 @@ const NavBar = (props) => {
                 {/* Recent Quotes */}
                 <TabPanel value="1" index={0}>
                     <QuoteGrid gridItems={gridItems}/>
+                    {/* <QuoteGrid gridItems={gridItems}/> */}
                 </TabPanel>
                 {/* My Quotes */}
                 <TabPanel value="2" index={1}>

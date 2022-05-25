@@ -1,59 +1,59 @@
 [{
-    "postId": 1,
+    "postId": "1",
     "quoteText": "Who controls the British crown?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 2,
+    "postId": "2",
     "quoteText": "Who keeps the metric system down?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 3,
+    "postId": "3",
     "quoteText": "Who keeps Atlantis off the maps?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 4,
+    "postId": "4",
     "quoteText": "Who keeps the Martians under wraps?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 5,
+    "postId": "5",
     "quoteText": "Who holds back the electric car?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 6,
+    "postId": "6",
     "quoteText": "Who makes Steve Guttenberg a star?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 7,
+    "postId": "7",
     "quoteText": "Who robs cavefish of their sight?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 8,
+    "postId": "8",
     "quoteText": "Who rigs every Oscar night?",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 9,
+    "postId": "9",
     "quoteText": "We do!",
     "tags":"#funny",
     "bookName":"something",
     "authorName":"someone"
 }, {
-    "postId": 10,
+    "postId": "10",
     "quoteText": "We do!",
     "tags":"#funny",
     "bookName":"something",

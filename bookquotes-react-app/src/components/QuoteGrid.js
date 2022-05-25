@@ -1,25 +1,43 @@
-import React from "react";
-import { CSSGrid, measureItems, makeResponsive } from 'react-stonecutter';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import { imageListItemClasses } from "@mui/material/ImageListItem";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      mobile: 0,
+      bigMobile: 350,
+      tablet: 650,
+      desktop: 900
+    }
+  }
+});
 
 const QuoteGrid = (props) => {
-    
-    const Grid = makeResponsive(measureItems(CSSGrid), {
-        maxWidth: 1920,
-        minPadding: 100
-    });
-
-    return (
-        <Grid
-            className="quote-grid"
-            component="ul"
-            gutterWidth={5}
-            gutterHeight={70}
-            columnWidth={350}
-            duration={800}
-        >
-            {props.gridItems}
-        </Grid>
-    );
+  return (
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          height: 450,
+          display: "grid",
+          gridTemplateColumns: {
+            mobile: "repeat(1, 1fr)",
+            bigMobile: "repeat(2, 1fr)",
+            tablet: "repeat(3, 1fr)",
+            desktop: "repeat(4, 1fr)"
+          },
+          [`& .${imageListItemClasses.root}`]: {
+            display: "flex",
+            flexDirection: "column"
+          }
+        }}
+      >
+          {props.gridItems}
+      </Box>
+    </ThemeProvider>
+  );
 }
 
-export default QuoteGrid;
+export default QuoteGrid; 

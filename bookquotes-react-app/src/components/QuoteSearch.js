@@ -6,10 +6,10 @@ const QuoteSearch = (props) => {
         <div className="quote-search-area">
             <form onSubmit={props.searchQuotes} action="">
                 <TextField
-                    id="outlined-basic"
+                    id="outlined-basic-search"
                     variant="outlined"
                     fullWidth
-                    label="Search for a quote or hashtag..."
+                    label="Search for a quote, hashtag, author or book..."
                     onChange={props.handleSearch}
                     helperText={props.notification}
                 />

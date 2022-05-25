@@ -1,9 +1,11 @@
 import React from "react";
+import { Chip } from '@mui/material';
 
-const NewQuoteChip = (id, text) => {
+const NewQuoteChip = (props) => {
+    const handleClick = (e) => {console.log('click q');}
     return (
-        <li key={id}>{text}</li>
+        <Chip label="New Quote" variant="outlined" onClick={handleClick} />
     );    
 }
 
-export default QuoteTile;
+export default NewQuoteChip;

@@ -56,7 +56,7 @@ const NavBar = (props) => {
 
     // plug in typesense search result data
 
-    const isSearched = props.searchResults.length === 0 ? false : true;
+    const isSearched = props.searchResults?.length === 0 ? false : true;
     const [searchData, setSearchData] = React.useState([]);
     React.useEffect(() => {
         if (isSearched) {

@@ -8,16 +8,20 @@ class App extends Component {
     super(props);
     this.state = {
       searchQuotes: [],
+      userId: ''
     }
   }
   handleCallback = (headerSearchResult) => {
     this.setState({ searchQuotes: headerSearchResult });
   }
+  handleSignIn = (userName) => {
+    this.setState({ userId: userName });
+  }
   render() {
     return (
       <div className="App">
-        <MainHeader parentCallback={this.handleCallback} />
-        <MainBody searchResults={this.state.searchQuotes} />
+        <MainHeader parentCallback={this.handleCallback} userName={this.state.userId} signInHandler={this.handleSignIn}/>
+        <MainBody searchResults={this.state.searchQuotes} userName={this.state.userId}/>
       </div>
     );
   }

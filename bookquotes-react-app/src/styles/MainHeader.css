@@ -1,17 +1,16 @@
 .bq-main-logo {
   padding-top: 15px;
   padding-left: 15px;
+  margin-left: 0;
   height: 30%;
   width: 20%;
+  display: inline-block;
 }
 
 .main-header {
   background-color: cornsilk;
   min-height: 15vh;
   display: flex;
-  align-items: left;
-  text-align: left;
-  justify-content: left;
   font-size: calc(10px + 2vmin);
   color: cornsilk;
 }
@@ -20,4 +19,13 @@
   padding: 25px;
   width: 50%;
   background-color: cornsilk;
+  display: inline-block
+}
+
+.header-actions {
+  position: relative;
+  margin-left: auto;
+  margin-right: 0;
+  padding: 25px;
+  justify-content: right !important;
 }

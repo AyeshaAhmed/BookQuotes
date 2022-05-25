@@ -14,7 +14,6 @@ class App extends Component {
     this.setState({ searchQuotes: headerSearchResult });
   }
   render() {
-    console.log(this.state.searchQuotes);
     return (
       <div className="App">
         <MainHeader parentCallback={this.handleCallback} />

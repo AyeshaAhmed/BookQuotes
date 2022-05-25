@@ -8,7 +8,6 @@ class MainHeader extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            quotes: [],
             searchField: '',
             helperText: ''
         }
@@ -33,8 +32,10 @@ class MainHeader extends Component {
         this.client.collections('quotes').documents()
             .search({ 'q': this.state.searchField, 'query_by': 'quoteText,tags,authorName,bookName' })
             .then(data => {
+                let tempList = [];
                 this.setState({ helperText: data.hits.length + " search results found" })
-                this.props.parentCallback(data.hits);
+                data.hits.map((hit)=>(tempList = [...tempList, hit.document]));
+                this.props.parentCallback(tempList);
             })
     }
 

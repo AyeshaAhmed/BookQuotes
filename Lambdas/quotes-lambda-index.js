@@ -26,7 +26,7 @@ exports.handler = async function (event) {
 }
 
 async function getRecentQuotes() {
-    const recentQuotes = [];
+    let recentQuotes = [];
     for(let i = 0; i < 3; i++){
         const queryDate = new Date(new Date().setDate(new Date().getDate() - i)).toISOString().split('T', 1)[0];
         const params = {
@@ -43,7 +43,7 @@ async function getRecentQuotes() {
             const quotes = response.Items;
             if (quotes.length > 0) {
                 quotes.sort((a, b) => (a.numBookmarks > b.numBookmarks) ? 1 : -1);
-                recentQuotes.push(quotes);
+                recentQuotes.push.apply(recentQuotes, quotes);
             }
         }catch (error) {
             console.error('log error: ', error);
@@ -66,7 +66,7 @@ async function getUserQuotes(userIdStr) {
     console.log('Request Params: ', params);
     return await dynamodb.query(params).promise().then((response) => {
         const body = {
-            thread: response
+            quotes: response.Items
         }
         return buildResponse(200, body);
     }, (error) => {
@@ -78,7 +78,13 @@ function buildResponse(statusCode, body) {
     return {
         statusCode: statusCode,
         headers: {
-            'Content-Type': 'application/json'
+            'Access-Control-Expose-Headers': 'Access-Control-Allow-Origin',
+            'Access-Control-Allow-Credentials': true,
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers' : 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods' : 'OPTIONS,GET',
+            'X-Requested-With' : '*'
         },
         body: JSON.stringify(body)
     }

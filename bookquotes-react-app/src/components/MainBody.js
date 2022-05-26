@@ -12,7 +12,7 @@ class MainBody extends Component {
     render() {
         return (
             <div className="main-body">
-                <NavBar searchResults={this.props.searchResults} userId={this.props.userName}/>
+                <NavBar searchResults={this.props.searchResults} userId={this.props.userName} apiUrl={this.props.apiUrl}/>
             </div>
         );
     }

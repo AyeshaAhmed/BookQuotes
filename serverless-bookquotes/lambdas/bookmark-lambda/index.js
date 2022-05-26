@@ -61,6 +61,14 @@ async function getBookmarks(userId) {
 
 async function addBookmark(postId, userId) {
     const bmQuoteIds = await getUserBookmarked(userId);
+    const found = array1.find(element => element==postId);
+    if(found != undefined){
+        const body = {
+            Operation: 'SAVE',
+            Message: 'Already exists.'
+        }
+        return buildResponse(200, body);
+    }
     bmQuoteIds.push.apply(bmQuoteIds, postId);
     const params = {
         TableName: dbUserTable,
@@ -190,7 +198,7 @@ function buildResponse(statusCode, body) {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers' : 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-            'Access-Control-Allow-Methods' : 'OPTIONS,PATCH,PUT',
+            'Access-Control-Allow-Methods' : 'OPTIONS,POST,DELETE,GET,PUT',
             'X-Requested-With' : '*'
         },
         body: JSON.stringify(body)

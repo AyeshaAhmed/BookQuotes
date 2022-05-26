@@ -73,7 +73,6 @@ resources:
               WriteCapacityUnits: '5'
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
-    
     threadTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -99,6 +98,24 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: '5'
               WriteCapacityUnits: '5'
+    userTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: user-table
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH #partition key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+package:
+  individually: true
+  exclude:
+    - ./**
 
 functions:
   anyPath:
@@ -114,8 +131,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/any-lambda/**
+        - lambdas/any-lambda/index.js
   proxyPath:
     handler: app.server # reference the file and exported method
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -127,7 +143,6 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
         - app.js
   healthCheck:              
     handler: lambdas/healthCheck-lambda/index.handler
@@ -140,8 +155,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/healthCheck-lambda/**
+        - lambdas/healthCheck-lambda/index.js
   quoteOps:  
     handler: lambdas/quote-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -166,8 +180,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/quote-lambda/**
+        - lambdas/quote-lambda/index.js
   quotesOps:  
     handler: lambdas/quotes-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -179,8 +192,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/quotes-lambda/**
+        - lambdas/quotes-lambda/index.js
   threadOps:  
     handler: lambdas/thread-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -204,8 +216,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/thread-lambda/**
+        - lambdas/thread-lambda/index.js
   bookmarkOps:  
     handler: lambdas/bookmark-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -225,17 +236,27 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/bookmark-lambda/**
+        - lambdas/bookmark-lambda/index.js
+  userOps:  
+    handler: lambdas/user-lambda/index.handler
+    role: arn:aws:iam::341614884717:role/slsLambdaRoles
+    events:
+      - http: 
+          path: /user
+          method: GET
+          cors: true 
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - lambdas/user-lambda/index.js
   typesenselambda:
-    handler: lambdas/typesense-lambda/index.handler
+    handler: lambdas/index.handler
     role: arn:aws:iam::341614884717:role/slsTypesenseLambdaRole
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
         - lambdas/node_modules/**
-        - lambdas/typesense-lambda/index.js
+        - lambdas/index.js
         - lambdas/package-lock.json
         - lambdas/package.json
   dbTrigger:
@@ -245,8 +266,7 @@ functions:
     package:
       # Directories and files to include in the deployed package
       patterns:
-        - '!**/*'
-        - lambdas/dbTrigger-lambda/**
+        - lambdas/dbTrigger-lambda/index.js
     events:
       - stream:
           type: dynamodb

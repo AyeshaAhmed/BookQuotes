@@ -1,0 +1,26 @@
+{
+    "name": "quotes",
+    "fields": [
+      {
+        "name": "postId",
+        "type": "string",
+        "facet": true
+      },
+      {
+        "name": "quoteText",
+        "type": "string"
+      },
+      {
+        "name": "tags",
+        "type": "string"
+      },
+      {
+        "name": "authorName",
+        "type": "string"
+      },
+      {
+        "name": "bookName",
+        "type": "string"
+      }
+    ]
+  }

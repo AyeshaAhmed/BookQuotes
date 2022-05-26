@@ -15,8 +15,8 @@ exports.handler = async function (event) {
     let response;
     const q_params = event.queryStringParameters;
     switch (true) {
-        case event.httpMethod === 'GET': // check / add user
-            response = await getUser(q_params.userId, q_params.password);
+        case event.httpMethod === 'GET' && q_params.userId != null: // check / add user
+            response = await getUser(q_params.userId);
             break;
         default:
             response = buildResponse(404, '404 Not Found');
@@ -24,38 +24,46 @@ exports.handler = async function (event) {
     return response;
 }
 
-async function getUser(userId, password) {
+async function getUser(userId) {
     const params = {
         TableName: dbUserTable,
         Key: {
             'userId': userId
         }
     }
-    console.log('Request Params: ', params);
-    return await dynamodb.get(params).promise().then((response) => {
-
-        return buildResponse(200, response.Item);
+    console.log('Check User Request Params: ', params);
+    const result = await dynamodb.get(params).promise().then((response) => {
+        console.log(response);
+        return response.Item;
+        // return buildResponse(200, response.Item);
     }, (error) => {
         console.error('log error: ', error);
     });
-}
-
-async function matchUserId(postId, userId) {
-    const params = {
-        TableName: dbQuoteTable,
-        Key: {
-            'postId': postId
+    if (result != null && result.userId != null) {
+        const body = {
+            newUser: false,
+            userId: result.userId
         }
-    }
-    console.log('Request Params: ', params);
-    try {
-        const response = await dynamodb.get(params).promise();
-        if (response.Item.userId === userId) {
-            return true;
+        return buildResponse(200, body);
+    } else {
+        const reqBody = {
+            userId: userId,
+            bookmarks: []
         }
-        return false;
-    } catch (error) {
-        console.error('log error: ', error);
+        const create_params = {
+            TableName: dbUserTable,
+            Item: reqBody
+        }
+        console.log('New User Request Params: ', params);
+        return await dynamodb.put(create_params).promise().then(() => {
+            const body = {
+                newUser: true,
+                userId: userId
+            }
+            return buildResponse(200, body);
+        }, (error) => {
+            console.error('log error: ', error);
+        });
     }
 }
 
@@ -67,9 +75,9 @@ function buildResponse(statusCode, body) {
             'Access-Control-Allow-Credentials': true,
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers' : 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-            'Access-Control-Allow-Methods' : 'OPTIONS,GET',
-            'X-Requested-With' : '*'
+            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'OPTIONS,GET',
+            'X-Requested-With': '*'
         },
         body: JSON.stringify(body)
     }

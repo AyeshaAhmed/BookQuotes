@@ -13,8 +13,9 @@ class MainHeader extends Component {
         this.state = {
             searchField: '',
             helperText: '',
-            loginId: this.props.userName,
-            isLoggedIn: false
+            isLoggedIn: false,
+            apiUrl: this.props.apiUrl,
+            user: '',
         }
     }
 
@@ -41,15 +42,12 @@ class MainHeader extends Component {
                 this.setState({ helperText: data.hits.length + " search results found" })
                 data.hits.map((hit) => (tempList = [...tempList, hit.document]));
                 this.props.parentCallback(tempList);
-            })
+            });
     }
 
-    handleUserId = (e) => {
-        e.preventDefault();
-        const res = e.target.value;
-        let isUser = res !== null && res !== undefined && res.length > 0 ? true : false;
-        console.log(res);
-        this.setState({ loginId: res, isLoggedIn: isUser });
+    handleUserId = (res) => {
+        const isUser = res !== null && res !== undefined && res.length > 0 ? true : false;
+        this.setState({ isLoggedIn: isUser, user: res });
         this.props.signInHandler(res);
     }
 
@@ -58,16 +56,13 @@ class MainHeader extends Component {
             <header className="main-header">
                 <img src={longLogo} className="bq-main-logo" alt="logo" />
                 <QuoteSearch handleSearch={this.handleSearch} searchQuotes={this.searchQuotes} notification={this.state.helperText} />
-                {this.state.isLoggedIn ?
-                    <div className="header-actions">
-                        <NewQuoteChip userName={this.state.loginId}/>
-                        <LoginChip handleLogin={this.handleUserId} userName={this.state.loginId}/>
-                    </div>
-                    :
-                    <div className="header-actions">
-                        <LoginChip handleLogin={this.handleUserId} userName={this.state.loginId}/>
-                    </div>
-                }
+                <div className="header-actions">
+                    {this.state.isLoggedIn ? 
+                    <NewQuoteChip apiUrl={this.props.apiUrl} userName={this.state.user}/> 
+                    : 
+                    <LoginChip apiUrl={this.props.apiUrl} handleUserId={this.handleUserId} />
+                    }
+                </div>
             </header>
         );
     }

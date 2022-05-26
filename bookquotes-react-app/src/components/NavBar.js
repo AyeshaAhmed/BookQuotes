@@ -19,6 +19,7 @@ const NavBar = (props) => {
     const [recentData, setRecentData] = React.useState(data);
     const [userData, setUserData] = React.useState(data);
     const [markedData, setMarkedData] = React.useState(data);
+    const isLoggedIn = props.userId?.length === 0 ? false : true;
 
     React.useEffect(() => {
         switch (true) {
@@ -26,7 +27,7 @@ const NavBar = (props) => {
                 callQuotesAPI(null);
                 break;
             case value === '2':
-                callQuotesAPI('aahmed');
+                callQuotesAPI(props.userId);
                 break;
             case value === '3':
                 setMarkedData(data);
@@ -36,7 +37,7 @@ const NavBar = (props) => {
             default:
                 console.log("default");
         }
-    }, [value]);
+    }, [value, props.userId]);
 
     // handle request to aws api
 
@@ -94,8 +95,8 @@ const NavBar = (props) => {
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label="tab nav">
                         <Tab label="Recent Quotes" value="1" />
-                        <Tab label="My Quotes" value="2" />
-                        <Tab label="Bookmarked" value="3" />
+                        <Tab label="My Quotes" value="2" disabled={!isLoggedIn} />
+                        <Tab label="Bookmarked" value="3" disabled={!isLoggedIn} />
                         <Tab label="Search Results" value="4" disabled={!isSearched} />
                     </TabList>
                 </Box>

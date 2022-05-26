@@ -7,6 +7,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      apiUrl: 'https://24owrfah24.execute-api.us-east-2.amazonaws.com/production/',
       searchQuotes: [],
       userId: ''
     }
@@ -20,8 +21,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <MainHeader parentCallback={this.handleCallback} userName={this.state.userId} signInHandler={this.handleSignIn}/>
-        <MainBody searchResults={this.state.searchQuotes} userName={this.state.userId}/>
+        <MainHeader apiUrl={this.state.apiUrl} parentCallback={this.handleCallback} signInHandler={this.handleSignIn}/>
+        <MainBody apiUrl={this.state.apiUrl} searchResults={this.state.searchQuotes} userName={this.state.userId}/>
       </div>
     );
   }

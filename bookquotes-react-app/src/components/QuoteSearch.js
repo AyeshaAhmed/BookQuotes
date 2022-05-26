@@ -10,6 +10,7 @@ const QuoteSearch = (props) => {
                     variant="outlined"
                     fullWidth
                     label="Search for a quote, hashtag, author or book..."
+                    type="search"
                     onChange={props.handleSearch}
                     helperText={props.notification}
                 />

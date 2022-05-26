@@ -33,10 +33,10 @@ exports.handler = async function (event) {
 }
 
 async function getBookmarks(userId) {
-    const bmQuoteIds = getUserBookmarked(userId);
+    const bmQuoteIds = await getUserBookmarked(userId);
     const bmQuotes = [];
     if(bmQuoteIds != null){
-        bmQuotes.forEach(quoteId => {
+        for(const quoteId of bmQuotes) {
             const params = {
                 TableName: dbQuoteTable,
                 postId: quoteId
@@ -53,14 +53,14 @@ async function getBookmarks(userId) {
                 console.error('log error: ', error);
                 return buildResponse(500, 'Internal Server Error');
             }
-        });
+        };
         const body = {quotes: bmQuotes};
         return buildResponse(200, body);
     }
 }
 
 async function addBookmark(postId, userId) {
-    const bmQuoteIds = getUserBookmarked(userId);
+    const bmQuoteIds = await getUserBookmarked(userId);
     bmQuoteIds.push.apply(bmQuoteIds, postId);
     const params = {
         TableName: dbUserTable,
@@ -111,7 +111,7 @@ async function addBookmark(postId, userId) {
 }
 
 async function removeBookmark(postId, userId) {
-    const bmQuoteIds = getUserBookmarked(userId);
+    const bmQuoteIds = await getUserBookmarked(userId);
     let itemToBeRemoved = [postId];
     const filteredArray = bmQuoteIds.filter(item => !itemToBeRemoved.includes(item));
     const params = {

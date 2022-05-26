@@ -16,51 +16,43 @@ const style = {
 };
 
 const LoginChip = (props) => {
-    const isUser = props.userName !== null && props.userName !== undefined && props.userName.length > 0;
-    const chipText = isUser ? props.userName : 'Sign In';
 
     const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
+    const handleOpen = () => {setOpen(true); setMessage('')};
     const handleClose = () => setOpen(false);
-
     const [userId, setUserId] = React.useState('');
-    const [userIdErr, setUserIdErr] = React.useState('');
-    const [passphrase, setPassphrase] = React.useState('');
-    const [passphraseErr, setPassphraseErr] = React.useState('');
+    const [userIdErr, setUserIdErr] = React.useState(false);
     const [loginMessage, setMessage] = React.useState('');
+    
     const handleUserName = (e) => {
-        const reg = /^([^($!@%#^&*)(+=|}{}?><,.:;"'~`_\]\[\-)]*)$/;
-        if (reg.test(e.target.value)) {
-            this.setState({ ...this.state.userInput, username: e.currentTarget.value })
+        const reg = /^[a-z0-9]+$/i;
+        if (!reg.test(e.target.value)) {
+            setUserIdErr(true);
         } else {
+            setUserIdErr(false);
             setUserId(e.target.value);
         }
     }
-    const handlePassword = (e) => {
-        setPassphrase(e.target.value);
-    }
+    
     const handleLogin = (e) => {
         e.preventDefault();
-        // props.handleUserId();
+        callUserAPI(userId);
     }
 
-    const callQuotesAPI = (userName) => {
+    const callUserAPI = (userName) => {
         request
-            .get("https://7cdlx16y58.execute-api.us-east-2.amazonaws.com/prod/quotes")
-            .query(userName !== null ? { userId: userName } : null)
+            .get(props.apiUrl + "user")
+            .query({ userId: userName })
             .set('content-type', 'application/json')
             .then((res) => {
-                if (userName !== null) {
-                    // setUserData(res.body.quotes);
-                } else {
-                    // setRecentData(res.body.quotes);
-                }
+                setMessage(res.body.newUser ? 'Howdy new user!' : 'Welcome back pal!');
+                props.handleUserId(res.body.userId);
             });
     }
 
     return (
         <div>
-            <Chip label={chipText} variant="outlined" onClick={handleOpen} gutterBottom />
+            <Chip label={'Sign In'} variant="outlined" onClick={handleOpen} />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -77,20 +69,12 @@ const LoginChip = (props) => {
                         variant="outlined"
                         fullWidth
                         label="Username"
+                        error={userIdErr}
                         onChange={handleUserName}
                         helperText={'No special charaters.'}
                     />
-                    <span>&nbsp;</span>
-                    <TextField
-                        id="outlined-basic-passphrase"
-                        variant="outlined"
-                        fullWidth
-                        label="Passcode"
-                        onChange={handlePassword}
-                        helperText={'No special charaters.'}
-                    />
                     <div><span>&nbsp;</span></div>
-                    <Button onClick={handleLogin} variant="contained">Login/Sign Up</Button>
+                    <Button onClick={handleLogin} disabled={userIdErr} variant="contained">Login / Sign Up</Button>
                     <div><span>&nbsp;</span></div>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }} >
                         {loginMessage}

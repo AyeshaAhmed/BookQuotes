@@ -17,21 +17,21 @@ provider:
   environment: # add environment property
     NODE_ENV: ${self:custom.secrets.NODE_ENV} 
     # reference the NODE_ENV from the secrets.json file
-  # deploymentPrefix: ${service}
-  # deploymentBucket: 
-  #   name: book-quotes-sls
-  #   blockPublicAccess: false
-  #   versioning: false
   apiName: book-quotes-api
   endpointType: regional
   logs:
     restApi:
       level: INFO
-  s3:
-    bucketOne:
-      name: book-quotes-sls
-      versioningConfiguration:
-        Status: Suspended
+  # s3:
+  #   bucketOne:
+  #     name: book-quotes-sls
+  #     versioningConfiguration:
+  #       Status: Suspended
+    # deploymentPrefix: ${service}
+  # deploymentBucket: 
+  #   name: book-quotes-sls
+  #   blockPublicAccess: false
+  #   versioning: false
 
 resources:
   Resources:
@@ -102,7 +102,7 @@ resources:
 
 functions:
   anyPath:
-    handler: lambdas/any-lambda-index.handler # reference the file and exported method
+    handler: lambdas/any-lambda/index.handler # reference the file and exported method
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
       # arn:
       #   Fn::GetAtt: [ serverless-lambda-role, Arn ]
@@ -111,6 +111,11 @@ functions:
           path: /
           method: ANY
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/any-lambda/**
   proxyPath:
     handler: app.server # reference the file and exported method
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
@@ -119,16 +124,26 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - app.js
   healthCheck:              
-    handler: lambdas/health-check-lambda-index.handler
+    handler: lambdas/healthCheck-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
     events:
       - http:
           path: /health
           method: GET
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/healthCheck-lambda/**
   quoteOps:  
-    handler: lambdas/quote-lambda-index.handler
+    handler: lambdas/quote-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
     # !GetAtt slsLambdaRoles.Arn
     events:
@@ -148,16 +163,26 @@ functions:
           path: /quote
           method: DELETE
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/quote-lambda/**
   quotesOps:  
-    handler: lambdas/quote-lambda-index.handler
+    handler: lambdas/quotes-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
     events:
       - http: 
           path: /quotes
           method: GET
           cors: true 
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/quotes-lambda/**
   threadOps:  
-    handler: lambdas/thread-lambda-index.handler
+    handler: lambdas/thread-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
     events:
       - http: 
@@ -176,8 +201,13 @@ functions:
           path: /thread
           method: DELETE
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/thread-lambda/**
   bookmarkOps:  
-    handler: lambdas/bookmark-lambda-index.handler
+    handler: lambdas/bookmark-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsLambdaRoles
     events:
       - http: 
@@ -192,27 +222,32 @@ functions:
           path: /bookmark
           method: DELETE
           cors: true
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/bookmark-lambda/**
   typesenselambda:
-    handler: lambdas/typesense-lambda-index.handler
+    handler: lambdas/typesense-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsTypesenseLambdaRole
     package:
       # Directories and files to include in the deployed package
       patterns:
         - '!**/*'
         - lambdas/node_modules/**
-        - lambdas/typesense-lambda-index.js
+        - lambdas/typesense-lambda/index.js
         - lambdas/package-lock.json
         - lambdas/package.json
-      # Explicitly set the package artifact to deploy (overrides native packaging behavior)
-      artifact: lambdas/typesense-lambda.zip
-      # Package this function as an individual artifact (default: false)
-      individually: true
   dbTrigger:
-    handler: lambdas/trigger-lambda-index.handler
+    handler: lambdas/dbTrigger-lambda/index.handler
     role: arn:aws:iam::341614884717:role/slsTypesenseLambdaRole
     # arn:aws:iam:us-east-2:341614884717:role/typesense-lambda-role
+    package:
+      # Directories and files to include in the deployed package
+      patterns:
+        - '!**/*'
+        - lambdas/dbTrigger-lambda/**
     events:
-      # - stream: arn:aws:dynamodb::341614884717:table/quote-table/stream/2022-05-23T15:22:13.377
       - stream:
           type: dynamodb
           arn:

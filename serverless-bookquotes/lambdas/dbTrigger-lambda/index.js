@@ -14,7 +14,7 @@ exports.handler = (event, context, callback) => {
     event.Records.forEach((record) => {
         console.log('Stream record: ', JSON.stringify(record, null, 2));
         lambda.invoke({
-            FunctionName: 'typesenselambda',
+            FunctionName: 'serverless-bookquotes-production-typesenselambda',
             InvocationType: 'Event',
             Payload: JSON.stringify(record)
         },function(err, data){

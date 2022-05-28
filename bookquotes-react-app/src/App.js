@@ -7,7 +7,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      apiUrl: 'https://24owrfah24.execute-api.us-east-2.amazonaws.com/production/',
+      apiUrl: 'https://79j7sducnk.execute-api.us-east-2.amazonaws.com/production/',
       searchQuotes: [],
       userId: ''
     }

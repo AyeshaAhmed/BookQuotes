@@ -34,61 +34,89 @@ exports.handler = async function (event) {
 
 async function getBookmarks(userId) {
     const bmQuoteIds = await getUserBookmarked(userId);
-    const bmQuotes = [];
-    if(bmQuoteIds != null){
-        for(const quoteId of bmQuotes) {
+    let bmQuotes = [];
+    let idsToDelete = [];
+    if (bmQuoteIds.length > 0) {
+        for (const quoteId of bmQuoteIds) {
             const params = {
                 TableName: dbQuoteTable,
-                postId: quoteId
+                Key: {
+                    'postId': quoteId
+                }
             }
             console.log('Request Params: ', params);
-            recentQuotes.push.apply(recentQuotes, quotes);
-            try{
-                const response = await dynamodb.get(params).promise();
-                const quote = response.Item;
-                if (quote.postId != null) {
-                    bmQuotes.push.apply(bmQuotes, quote);
+            await dynamodb.get(params).promise().then((res) => {
+                console.log(res);
+                const quote = res.Item;
+                if (quote != null && quote.postId != null) {
+                    bmQuotes.push.apply(bmQuotes, [quote]);
+                } else {
+                    bmQuotes.push.apply(idsToDelete, [quoteId]);
                 }
-            }catch (error) {
+            }, (error) => {
                 console.error('log error: ', error);
                 return buildResponse(500, 'Internal Server Error');
-            }
+            });
         };
-        const body = {quotes: bmQuotes};
-        return buildResponse(200, body);
     }
+    if (idsToDelete.length > 0) {
+        const filteredArray = bmQuoteIds.filter(item => !idsToDelete.includes(item));
+        const params = {
+            TableName: dbUserTable,
+            Key: {
+                'userId': userId
+            },
+            UpdateExpression: 'set bookmarks = :value',
+            ExpressionAttributeValues: {
+                ':value': filteredArray
+            },
+            ReturnValues: 'NONE'
+        }
+        console.log('update user list Request Params: ', params);
+        const isSuccess = await dynamodb.update(params).promise().then(() => {
+            return true;
+        }, (error) => {
+            console.error('log error: ', error);
+            return false;
+        });
+        if (!isSuccess) {
+            return buildResponse(500, 'Internal Server Error');
+        }
+    }
+    const body = { quotes: bmQuotes };
+    return buildResponse(200, body);
 }
 
 async function addBookmark(postId, userId) {
     const bmQuoteIds = await getUserBookmarked(userId);
-    const found = array1.find(element => element==postId);
-    if(found != undefined){
+    const found = bmQuoteIds.find(element => element == postId);
+    if (found != undefined) {
         const body = {
             Operation: 'SAVE',
             Message: 'Already exists.'
         }
         return buildResponse(200, body);
     }
-    bmQuoteIds.push.apply(bmQuoteIds, postId);
+    bmQuoteIds.push.apply(bmQuoteIds, [postId]);
     const params = {
         TableName: dbUserTable,
         Key: {
             'userId': userId
         },
-        UpdateExpression: 'set :bookmarks :value',
+        UpdateExpression: 'set bookmarks = :value',
         ExpressionAttributeValues: {
             ':value': bmQuoteIds
         },
         ReturnValues: 'NONE'
     }
     console.log('update user list Request Params: ', params);
-    const isSuccess = await dynamodb.put(params).promise().then(() => {
+    const isSuccess = await dynamodb.update(params).promise().then(() => {
         return true;
     }, (error) => {
         console.error('log error: ', error);
         return false;
     });
-    if(!isSuccess){
+    if (!isSuccess) {
         return buildResponse(500, 'Internal Server Error');
     }
     const quote_params = {
@@ -96,21 +124,21 @@ async function addBookmark(postId, userId) {
         Key: {
             'postId': postId
         },
-        UpdateExpression: 'set ADD #counter :incva',
-        ExpressionAttributeNames:{
-            "#counter":"numBookmarks"
+        UpdateExpression: 'add #counter :incva',
+        ExpressionAttributeNames: {
+            "#counter": "numBookmarks"
         },
-        ExpressionAttributeValues:{
-            ":incva":1
+        ExpressionAttributeValues: {
+            ":incva": 1
         },
         ReturnValues: 'UPDATED_NEW'
     }
     console.log('Update numBookmarks Request Params: ', quote_params);
-    return await dynamodb.put(quote_params).promise().then((res) => {
+    return await dynamodb.update(quote_params).promise().then((res) => {
         const body = {
             Operation: 'SAVE',
             Message: 'SUCCESS',
-            numBookmarks: res.Item.numBookmarks
+            numBookmarks: res
         }
         return buildResponse(200, body);
     }, (error) => {
@@ -120,27 +148,26 @@ async function addBookmark(postId, userId) {
 
 async function removeBookmark(postId, userId) {
     const bmQuoteIds = await getUserBookmarked(userId);
-    let itemToBeRemoved = [postId];
-    const filteredArray = bmQuoteIds.filter(item => !itemToBeRemoved.includes(item));
+    const filteredArray = bmQuoteIds.filter(item => ![postId].includes(item));
     const params = {
         TableName: dbUserTable,
         Key: {
             'userId': userId
         },
-        UpdateExpression: 'set :bookmarks :value',
+        UpdateExpression: 'set bookmarks = :value',
         ExpressionAttributeValues: {
             ':value': filteredArray
         },
         ReturnValues: 'NONE'
     }
     console.log('update user list Request Params: ', params);
-    const isSuccess = await dynamodb.put(params).promise().then(() => {
+    const isSuccess = await dynamodb.update(params).promise().then(() => {
         return true;
     }, (error) => {
         console.error('log error: ', error);
         return false;
     });
-    if(!isSuccess){
+    if (!isSuccess) {
         return buildResponse(500, 'Internal Server Error');
     }
     const quote_params = {
@@ -148,21 +175,21 @@ async function removeBookmark(postId, userId) {
         Key: {
             'postId': postId
         },
-        UpdateExpression: 'set ADD #counter :incva',
-        ExpressionAttributeNames:{
-            "#counter":"numBookmarks"
+        UpdateExpression: 'add #counter :incva',
+        ExpressionAttributeNames: {
+            "#counter": "numBookmarks"
         },
-        ExpressionAttributeValues:{
-            ":incva":-1
+        ExpressionAttributeValues: {
+            ":incva": -1
         },
         ReturnValues: 'UPDATED_NEW'
     }
     console.log('Update numBookmarks Request Params: ', quote_params);
-    return await dynamodb.put(quote_params).promise().then((res) => {
+    return await dynamodb.update(quote_params).promise().then((res) => {
         const body = {
             Operation: 'SAVE',
             Message: 'SUCCESS',
-            numBookmarks: res.Item.numBookmarks
+            numBookmarks: res
         }
         return buildResponse(200, body);
     }, (error) => {
@@ -170,7 +197,7 @@ async function removeBookmark(postId, userId) {
     });
 }
 
-async function getUserBookmarked(userId){
+async function getUserBookmarked(userId) {
     const params = {
         TableName: dbUserTable,
         Key: {
@@ -179,8 +206,8 @@ async function getUserBookmarked(userId){
     }
     console.log('Request Params: ', params);
     return await dynamodb.get(params).promise().then((response) => {
-        console.log(response.Item);
-        if(response.Item.userId != null){
+        console.log(response);
+        if (response.Item.userId != null) {
             return response.Item.bookmarks;
         }
         return null;
@@ -197,9 +224,9 @@ function buildResponse(statusCode, body) {
             'Access-Control-Allow-Credentials': true,
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers' : 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-            'Access-Control-Allow-Methods' : 'OPTIONS,POST,DELETE,GET,PUT',
-            'X-Requested-With' : '*'
+            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,DELETE,GET',
+            'X-Requested-With': '*'
         },
         body: JSON.stringify(body)
     }

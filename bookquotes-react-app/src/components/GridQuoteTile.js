@@ -28,7 +28,7 @@ const GridQuoteTile = (props) => {
                             sx={{ color: 'gray' }}
                             aria-label={`star ${quote.postId}`}
                         >
-                            <FavoriteBorderIcon sx={{ height: 20, width: 20 }} />
+                            <FavoriteBorderIcon sx={{ height: 20, width: 20 }} /> <div style={{padding: "2px"}}>{quote.numBookmarks}</div>
                         </IconButton>
                     </form>
                 </CardActions>

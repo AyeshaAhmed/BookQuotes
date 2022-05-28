@@ -227,7 +227,7 @@ functions:
           cors: true 
       - http: 
           path: /bookmark
-          method: PUT
+          method: POST
           cors: true
       - http: 
           path: /bookmark
